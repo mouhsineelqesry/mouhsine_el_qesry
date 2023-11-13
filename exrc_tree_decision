@@ -1,0 +1,31 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Tue Sep 26 22:34:36 2023
+
+@author: mouhsine
+"""
+
+import pandas as pd
+
+df=pd.read_csv('~/Downloads/titanic.csv')
+print(df.head())
+
+# it's time to transform varable into numerical value
+inputs=df.drop(['PassengerId','Survived','Name','SibSp','Parch','Ticket','Cabin','Cabin','Embarked'],axis='columns')
+
+outputs=df.Survived
+print(outputs)
+## this lines do the work of transforming the string in numeral her we just have one column wish is THE SEX\
+    
+from sklearn.preprocessing import LabelEncoder
+l_sex=LabelEncoder()
+# add the columns to our data 
+inputs['l_sex']=l_sex.fit_transform(inputs['Sex'])
+finpt=inputs.drop(['Sex'], axis='columns')
+print(finpt.head())
+
+from sklearn import tree 
+model=tree.DecisionTreeClassifier()
+model.fit(finpt, outputs)
+print(model.score(finpt, outputs))
