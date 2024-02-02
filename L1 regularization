@@ -1,0 +1,41 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Sun Oct  1 19:17:10 2023
+
+@author: mouhsine
+"""
+
+import pandas as pd
+
+# read the dataset
+df=pd.read_csv('~/Downloads/Melbourne_housing_FULL.csv')
+#print(df.shape)
+# we want to use just columns that are useful
+cols_to_use = ['Suburb', 'Rooms', 'Type', 'Method', 'SellerG', 'Regionname', 'Propertycount', 
+               'Distance', 'CouncilArea', 'Bedroom2', 'Bathroom', 'Car', 'Landsize', 'BuildingArea', 'Price']
+
+df=df[cols_to_use]
+cols_to_fill_zero = ['Propertycount', 'Distance', 'Bedroom2', 'Bathroom', 'Car']
+df[cols_to_fill_zero] = df[cols_to_fill_zero].fillna(0)
+#df[cols_to_use]=df[cols_to_use].fillna(0)
+df['Landsize'] = df['Landsize'].fillna(df.Landsize.mean())
+df['BuildingArea'] = df['BuildingArea'].fillna(df.BuildingArea.mean())
+df.dropna(inplace=True)
+df = pd.get_dummies(df, drop_first=True)
+
+X = df.drop('Price', axis=1)
+y = df['Price']
+from sklearn.model_selection import train_test_split
+train_X, test_X, train_y, test_y = train_test_split(X, y, test_size=0.3, random_state=2)
+from sklearn.linear_model import LinearRegression
+reg = LinearRegression().fit(train_X, train_y)
+print(reg.score(test_X, test_y))
+print(reg.score(train_X, train_y))
+      
+      # now we will use the L1 regulisation
+
+from sklearn import linear_model
+lasso_reg = linear_model.Lasso(alpha=50, max_iter=100, tol=0.1)
+lasso_reg.fit(train_X, train_y)
+print(lasso_reg.score(test_X, test_y), lasso_reg.score(train_X, train_y))
